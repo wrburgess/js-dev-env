@@ -1,0 +1,11 @@
+{
+  "name": "devenv",
+  "version": "1.0.0",
+  "description": "Development environment template",
+  "main": "index.js",
+  "scripts": {
+    "test": "spec"
+  },
+  "author": "Randy Burgess, wrburgess, wrburgess@gmail.com",
+  "license": "MIT"
+}
