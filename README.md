@@ -1,4 +1,4 @@
-# Recipe for setting up a React development environment on Mac/OSX 10.11.1 (El Capitan)
+# Recipe for setting up a React development environment on Mac/OSX 10.11.1 (El Capitan) 
 
 * A set of instructions for getting started with a Gulp-based development environment for React with Browserify, Sass, and BrowserSync on Mac/OSX 10.11.1 El Capitan
 
@@ -12,19 +12,13 @@
 
 * 2015-12-05
 
-## Notes
-
-* You will find a plethora of different opinions and approaches for setting up a javascript development environment the "right way." Bottom line, the "right way" is really just any way that works for you, works for your project and team, and doesn't consistently break.
-* Therefore, this is not necessarily the "right way" to set up a javascript dev environment, but it's the "right way" for me, and I plan to keep it up-to-date as the javascript world moves along at it's crazy pace.
-* In my short 15-year development career, I strive to keep my codebases as simple as I can so that new developers can follow my lead, where necessary. Therefore, I try to keep things as simple as I can.
-
 ## Ingredients
 
 * Gulp
 * Browserify
 * Babel
 * React
-* Sass
+* Sass 
 * BrowserSync
 
 ## Steps
@@ -72,30 +66,110 @@
 
 ```
 .
-|-- build
+|-- build  
 |-- node_modules
 |-- src
 .gitignore
 gulpfile.js
 package.json
-README.md
+README.md 
 ```
 
-### Install packages
+### Install Gulp
+
+run commands:
 
 ```
 npm install --save-dev gulp
 npm install --save-dev gulp-util
-npm install --save-dev vinyl-source-stream
-npm install --save-dev browserify
+npm install --save-dev gulp-rename
+```
+
+edit `gulpfile.js` file:
+
+```
+'use strict';
+
+// Import modules
+var gulp = require('gulp');
+var gulputil = require('gulp-util');
+
+// Configuration
+var config = {
+  js: {
+    src: './src/js/main.jsx',
+    watch: './src/js/**/*',
+    outputDir: './build/'
+  },
+  css: {
+    src: './src/css/*.sass',
+    watch: './src/css/**/*',
+    outputDir: './build/'
+  },
+  html: {
+    src: './src/html/*',
+    watch: './src/html/**/*',
+    outputDir: './build/'
+  },
+  images: {
+    src: './src/images/*.sass',
+    watch: './src/images/**/*',
+    outputDir: './build/'
+  },
+  fonts: {
+    src: './src/fonts/*.sass',
+    watch: './src/fonts/**/*',
+    outputDir: './build/'
+  }
+};
+
+// Default task for Gulp
+gulp.task('default', function() {
+
+});
+
+```
+
+### Install Babelify, Babel Presets, and React
+
+run commands:
+
+```
 npm install --save-dev babelify
+npm install --save-dev babel-preset-es2015
+npm install --save-dev babel-preset-react
+npm install --save-dev browserify
+```
+
+Add to `gulpfile.js` in *Import modules* section
+
+```
+var babelify = require('babelify');
+var browserify = require('browserify');
+```
+
+### Install Vinyl support
+
+run commands:
+
+```
+npm install --save-dev vinyl-source-stream
+npm install --save-dev vinyl-buffer
+```
+
+Add to `gulpfile.js` in *Import modules* section
+
+```
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+```
+
+
 npm install --save-dev watchify
 npm install --save-dev gulp-notify
 npm install --save-dev gulp-sass
 npm install --save-dev gulp-autoprefixer
 npm install --save-dev gulp-uglify
-npm install --save-dev gulp-rename
-npm install --save-dev vinyl-buffer
 npm install --save-dev browser-sync
 ```
 
@@ -120,4 +194,8 @@ npm install --save-dev browser-sync
 * `npm update --dev` - update all the packages in devDependencies to the latest version
 * `npm prune` - remove packages not listed on parents packages' dependency list
 * `npm prune --production` - remove the packages specified in your devDependencies
+
+### links
+
+* [Faster Gulp, Browserify, Babelify, Watchify and React build process explained](http://mikevalstar.com/post/fast-gulp-browserify-babelify-watchify-react-build/)
 
