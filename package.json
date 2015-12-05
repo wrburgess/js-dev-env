@@ -9,7 +9,8 @@
   "author": "Randy Burgess, wrburgess, wrburgess@gmail.com",
   "license": "MIT",
   "devDependencies": {
-    "gulp": "^3.9.0"
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.7"
   },
   "repository": {
     "type": "git",
