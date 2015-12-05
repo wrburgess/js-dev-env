@@ -9,8 +9,13 @@
   "author": "Randy Burgess, wrburgess, wrburgess@gmail.com",
   "license": "MIT",
   "devDependencies": {
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babelify": "^7.2.0",
     "gulp": "^3.9.0",
-    "gulp-util": "^3.0.7"
+    "gulp-util": "^3.0.7",
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3"
   },
   "repository": {
     "type": "git",

@@ -35,7 +35,11 @@ var config = {
 
 // Default task for Gulp
 gulp.task('default', function() {
-  var bundler = browserify(config.js.src, args)
 
+});
+
+// Process JavaScript
+gulp.task('js', function() {
+  var bundler = browserify(config.js.src, args)
   bundle(bundler);
 });
