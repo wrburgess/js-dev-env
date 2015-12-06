@@ -66,13 +66,18 @@
 
 ```
 .
-|-- build  
+|-- build
 |-- node_modules
 |-- src
+  |-- css
+  |-- fonts
+  |-- html
+  |-- images
+  |-- js
 .gitignore
 gulpfile.js
 package.json
-README.md 
+README.md
 ```
 
 ### Install Gulp
@@ -83,6 +88,8 @@ run commands:
 npm install --save-dev gulp
 npm install --save-dev gulp-util
 npm install --save-dev gulp-rename
+npm install --save-dev gulp-duration
+npm install --save-dev chalk
 ```
 
 edit `gulpfile.js` file:
@@ -93,33 +100,36 @@ edit `gulpfile.js` file:
 // Import modules
 var gulp = require('gulp');
 var gulputil = require('gulp-util');
+var duration = require('gulp-duration');
+var rename = require('gulp-rename');
+var chalk = require('chalk');
 
 // Configuration
 var config = {
-  js: {
-    src: './src/js/main.jsx',
-    watch: './src/js/**/*',
-    outputDir: './build/'
-  },
   css: {
-    src: './src/css/*.sass',
-    watch: './src/css/**/*',
-    outputDir: './build/'
+    srcPath: './src/css/*.sass',
+    watchPath: './src/css/**/*',
+    buildPath: './build/'
   },
   html: {
-    src: './src/html/*',
-    watch: './src/html/**/*',
-    outputDir: './build/'
+    srcPath: './src/html/*',
+    watchPath: './src/html/**/*',
+    buildPath: './build/'
   },
   images: {
-    src: './src/images/*.sass',
-    watch: './src/images/**/*',
-    outputDir: './build/'
+    srcPath: './src/images/*.sass',
+    watchPath: './src/images/**/*',
+    buildPath: './build/'
+  },
+  js: {
+    srcPath: './src/js/main.jsx',
+    watchPath: './src/js/**/*',
+    buildPath: './build/'
   },
   fonts: {
-    src: './src/fonts/*.sass',
-    watch: './src/fonts/**/*',
-    outputDir: './build/'
+    srcPath: './src/fonts/*.sass',
+    watchPath: './src/fonts/**/*',
+    buildPath: './build/'
   }
 };
 
@@ -164,13 +174,126 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 ```
 
+### Install Sass processing
+
+run commands:
+
+```
+npm install --save-dev gulp-sass
+npm install --save-dev gulp-minify-css
+npm install --save-dev gulp-autoprefixer
+```
+
+Add to `gulpfile.js` in *Import modules* section
+
+```
+var sass = require('gulp-sass');
+var minifycss = require('gulp-minify-css');
+var autoprefixer = require('gulp-autoprefixer');
+```
+
+### Add better error messaging
+
+Add to `gulpfile.js` below config:
+
+```
+// Error reporting function
+function mapError(err) {
+  if (err.fileName) {
+    // Regular error
+    gutil.log(chalk.red(err.name)
+      + ': ' + chalk.yellow(err.fileName.replace(__dirname + '/src/js/', ''))
+      + ': ' + 'Line ' + chalk.magenta(err.lineNumber)
+      + ' & ' + 'Column ' + chalk.magenta(err.columnNumber || err.column)
+      + ': ' + chalk.blue(err.description));
+  } else {
+    // Browserify error..
+    gutil.log(chalk.red(err.name)
+      + ': '
+      + chalk.yellow(err.message));
+  }
+}
+```
+
+### Add js bundler function
+
+Add to `gulpfile.js` below `mapError` function:
+
+```
+function bundle(bundler) {
+  var bundleTimer = duration('Javascript bundle time');
+
+  bundler
+    .bundle()
+    .on('error', mapError)
+    .pipe(source(config.js.srcFile))
+    .pipe(buffer())
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulp.dest(config.js.buildPath))
+    .pipe(bundleTimer)
+}
+```
+
+### Add js task
+
+Add below `default` gulp task:
+
+```
+// Process JavaScript
+gulp.task('js', function() {
+  var bundler = browserify(config.js.src, args)
+    .transform(babelify, {presets: ['es2015', 'react']});
+  bundle(bundler);
+});
+```
+
+### Install Gulp Notify
+
+run commands:
+
+```
+npm install --save-dev gulp-notify
+```
+
+Add to `gulpfile.js` in *Import modules* section
+
+```
+var notifier = require('node-notifier'); // Doesn't need to be installed
+var notify = require('gulp-notify');
+```
+
+Sprinkle where necessary:
+
+```
+.pipe(notify({ message: 'Text to say: <%= dynamic.stuff %>' }))
+
+or
+
+notifier.notify({ message: 'Text to say: <%= dynamic.stuff %>' })
+```
 
 npm install --save-dev watchify
-npm install --save-dev gulp-notify
-npm install --save-dev gulp-sass
-npm install --save-dev gulp-autoprefixer
-npm install --save-dev gulp-uglify
 npm install --save-dev browser-sync
+```
+
+### Install BrowserSync
+
+run commands:
+
+```
+npm install --save-dev browser-sync
+```
+
+setup task:
+
+```
+gulp.task('serve', function() {
+  browserSync.init({
+    server: {
+      baseDir: './build'
+    }
+  });
+});
 ```
 
 ## References
@@ -198,4 +321,5 @@ npm install --save-dev browser-sync
 ### links
 
 * [Faster Gulp, Browserify, Babelify, Watchify and React build process explained](http://mikevalstar.com/post/fast-gulp-browserify-babelify-watchify-react-build/)
+
 

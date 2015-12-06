@@ -4,16 +4,22 @@
 var autoprefixer = require('gulp-autoprefixer');
 var babelify = require('babelify');
 var browserify = require('browserify');
+var browserSync = require('browser-sync');
 var buffer = require('vinyl-buffer');
 var chalk = require('chalk');
 var duration = require('gulp-duration');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var minifycss = require('gulp-minify-css');
+var notifier = require('node-notifier');
+var notify = require('gulp-notify');
 var react = require('react');
 var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var source = require('vinyl-source-stream');
+var watchify = require('watchify');
+
+var reload = browserSync.reload;
 
 // Configuration
 var config = {
@@ -57,6 +63,7 @@ function mapError(err) {
       + ': ' + chalk.blue(err.description));
   } else {
     // Browserify error..
+    browserSync.notify("Browserify Error!");
     gutil.log(chalk.red(err.name)
       + ': '
       + chalk.yellow(err.message));
@@ -75,16 +82,31 @@ function bundle(bundler) {
     .pipe(rename(config.js.buildFile))
     .pipe(gulp.dest(config.js.buildPath))
     .pipe(bundleTimer)
+    .pipe(reload({ stream: true }));
 }
 
 // Default task for Gulp
-gulp.task('default', ['html', 'images', 'fonts', 'css', 'js']);
+gulp.task('default', ['html', 'images', 'fonts', 'css', 'js', 'serve'], function() {
+  notifier.notify({
+    "subtitle": "Project web site",
+    "message": "Click to open project site",
+  });
+});
+
+
+gulp.task('serve', function() {
+  browserSync.init({
+    server: {
+      baseDir: './build'
+    }
+  });
+});
 
 // Process JavaScript
 gulp.task('js', function() {
   var bundler = browserify(config.js.srcPath + config.js.srcFile)
     .transform(babelify, { presets: ['es2015', 'react'] });
-  bundle(bundler);
+  bundle(bundler)
 });
 
 gulp.task('css', function() {
@@ -93,6 +115,7 @@ gulp.task('css', function() {
     .pipe(rename({ suffix: '.min' }))
     .pipe(minifycss())
     .pipe(gulp.dest(config.css.buildPath))
+    .pipe(reload({ stream: true }));
 });
 
 gulp.task('images', function() {
@@ -100,7 +123,13 @@ gulp.task('images', function() {
     .pipe(gulp.dest(config.images.buildPath));
 });
 
+gulp.task('fonts', function() {
+  gulp.src(config.fonts.srcPath)
+    .pipe(gulp.dest(config.fonts.buildPath));
+});
+
 gulp.task('html', function() {
   gulp.src(config.html.srcPath)
-    .pipe(gulp.dest(config.html.buildPath));
+    .pipe(gulp.dest(config.html.buildPath))
+    .pipe(reload({ stream: true }));
 });
