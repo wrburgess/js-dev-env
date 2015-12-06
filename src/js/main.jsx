@@ -6,7 +6,7 @@ var App = React.createClass({
   render() {
     return (
       <div className="app">
-        Hello App!
+        Hello App
         <img src="/apple-icon.png" />
       </div>
     )

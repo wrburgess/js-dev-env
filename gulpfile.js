@@ -17,7 +17,6 @@ var react = require('react');
 var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var source = require('vinyl-source-stream');
-var watchify = require('watchify');
 
 var reload = browserSync.reload;
 
@@ -86,13 +85,12 @@ function bundle(bundler) {
 }
 
 // Default task for Gulp
-gulp.task('default', ['html', 'images', 'fonts', 'css', 'js', 'serve'], function() {
+gulp.task('default', ['html', 'images', 'fonts', 'css', 'js', 'serve', 'watch'], function() {
   notifier.notify({
-    "subtitle": "Project web site",
-    "message": "Click to open project site",
+    "subtitle": "Dev Env",
+    "message": "Development site launched",
   });
 });
-
 
 gulp.task('serve', function() {
   browserSync.init({
@@ -118,14 +116,24 @@ gulp.task('css', function() {
     .pipe(reload({ stream: true }));
 });
 
+gulp.task('watch', function() {
+  gulp.watch("src/js/*", ["js"]);
+  gulp.watch("src/css/*.scss", ["css"]);
+  gulp.watch("src/html/*.html", ["html"]);
+  gulp.watch("src/fonts/*", ["fonts"])
+  gulp.watch("src/images/*", ["images"]);
+});
+
 gulp.task('images', function() {
   gulp.src(config.images.srcPath)
-    .pipe(gulp.dest(config.images.buildPath));
+    .pipe(gulp.dest(config.images.buildPath))
+    .pipe(reload({ stream: true }));
 });
 
 gulp.task('fonts', function() {
   gulp.src(config.fonts.srcPath)
-    .pipe(gulp.dest(config.fonts.buildPath));
+    .pipe(gulp.dest(config.fonts.buildPath))
+    .pipe(reload({ stream: true }));
 });
 
 gulp.task('html', function() {
